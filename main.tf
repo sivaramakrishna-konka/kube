@@ -39,8 +39,7 @@ resource "aws_instance" "k8s_nodes" {
   for_each                    = var.instance_types
   ami                         = data.aws_ami.example.id
   instance_type               = each.value
-  key_name                    = "bapatlas.site"
-  security_groups             = [aws_security_group.k8s_sg.name]
+  key_name                    = "sivsecurity_groups             = [aws_security_group.k8s_sg.name]
   associate_public_ip_address = true
 
   root_block_device {
@@ -74,9 +73,9 @@ resource "aws_security_group" "k8s_sg" {
 # variables
 variable "instance_types" {
   default = {
-    "master"  = "t3a.medium"
-    "worker1" = "t3a.medium"
-    "worker2" = "t3a.medium"
+    "master"  = "t3a.small"
+    "worker1" = "t3a.small"
+    "worker2" = "t3a.small"
   }
 }
 
@@ -114,7 +113,7 @@ resource "null_resource" "run_ansible" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      private_key = file("${path.module}/bapatlas.site.pem")
+      private_key = file("${path.module}/siva")
       host        = aws_instance.k8s_nodes["master"].public_ip
     }
   }
@@ -124,26 +123,26 @@ resource "null_resource" "run_ansible" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      private_key = file("${path.module}/bapatlas.site.pem")
+      private_key = file("${path.module}/siva")
       host        = aws_instance.k8s_nodes["master"].public_ip
     }
 
     inline = [
-      "cat <<EOF > /home/ubuntu/bapatlas.site.pem",
-      "${file("${path.module}/bapatlas.site.pem")}",
+      "cat <<EOF > /home/ubuntu/siva",
+      "${file("${path.module}/siva")}",
       "EOF",
-      "sudo chmod 400 /home/ubuntu/bapatlas.site.pem",
+      "sudo chmod 400 /home/ubuntu/siva",
       "sudo apt update && sudo apt install -y ansible",
       "echo '[master1]' > /home/ubuntu/inventory.ini",
       "echo 'master ansible_host=127.0.0.1 ansible_connection=local' >> /home/ubuntu/inventory.ini",
       "echo '[workers]' >> /home/ubuntu/inventory.ini",
-      "echo 'worker1 ansible_host=${aws_instance.k8s_nodes["worker1"].private_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/bapatlas.site.pem ansible_ssh_common_args=\"-o StrictHostKeyChecking=no\"' >> /home/ubuntu/inventory.ini",
-      "echo 'worker2 ansible_host=${aws_instance.k8s_nodes["worker2"].private_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/bapatlas.site.pem ansible_ssh_common_args=\"-o StrictHostKeyChecking=no\"' >> /home/ubuntu/inventory.ini",
+      "echo 'worker1 ansible_host=${aws_instance.k8s_nodes["worker1"].private_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/siva ansible_ssh_common_args=\"-o StrictHostKeyChecking=no\"' >> /home/ubuntu/inventory.ini",
+      "echo 'worker2 ansible_host=${aws_instance.k8s_nodes["worker2"].private_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/siva ansible_ssh_common_args=\"-o StrictHostKeyChecking=no\"' >> /home/ubuntu/inventory.ini",
       "cat /home/ubuntu/inventory.ini",
       "ls -l /home/ubuntu/",
-      "cat /home/ubuntu/bapatlas.site.pem",
-      "md5sum /home/ubuntu/bapatlas.site.pem",
-      "ssh-keygen -y -f /home/ubuntu/bapatlas.site.pem",
+      "cat /home/ubuntu/siva",
+      "md5sum /home/ubuntu/siva",
+      "ssh-keygen -y -f /home/ubuntu/siva",
       "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i /home/ubuntu/inventory.ini /home/ubuntu/playbook.yaml"
     ]
   }
