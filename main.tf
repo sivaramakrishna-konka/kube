@@ -39,7 +39,8 @@ resource "aws_instance" "k8s_nodes" {
   for_each                    = var.instance_types
   ami                         = data.aws_ami.example.id
   instance_type               = each.value
-  key_name                    = "sivsecurity_groups             = [aws_security_group.k8s_sg.name]
+  key_name                    = "siva"
+  security_groups             = [aws_security_group.k8s_sg.name]
   associate_public_ip_address = true
 
   root_block_device {
@@ -113,7 +114,7 @@ resource "null_resource" "run_ansible" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      private_key = file("${path.module}/siva")
+      private_key = file("${path.module}/siva.pe  ")
       host        = aws_instance.k8s_nodes["master"].public_ip
     }
   }
@@ -123,7 +124,7 @@ resource "null_resource" "run_ansible" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
-      private_key = file("${path.module}/siva")
+      private_key = file("${path.module}/siva.pe  ")
       host        = aws_instance.k8s_nodes["master"].public_ip
     }
 
@@ -136,8 +137,8 @@ resource "null_resource" "run_ansible" {
       "echo '[master1]' > /home/ubuntu/inventory.ini",
       "echo 'master ansible_host=127.0.0.1 ansible_connection=local' >> /home/ubuntu/inventory.ini",
       "echo '[workers]' >> /home/ubuntu/inventory.ini",
-      "echo 'worker1 ansible_host=${aws_instance.k8s_nodes["worker1"].private_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/siva ansible_ssh_common_args=\"-o StrictHostKeyChecking=no\"' >> /home/ubuntu/inventory.ini",
-      "echo 'worker2 ansible_host=${aws_instance.k8s_nodes["worker2"].private_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/siva ansible_ssh_common_args=\"-o StrictHostKeyChecking=no\"' >> /home/ubuntu/inventory.ini",
+      "echo 'worker1 ansible_host=${aws_instance.k8s_nodes["worker1"].private_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/siva.pe   ansible_ssh_common_args=\"-o StrictHostKeyChecking=no\"' >> /home/ubuntu/inventory.ini",
+      "echo 'worker2 ansible_host=${aws_instance.k8s_nodes["worker2"].private_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/siva.pe   ansible_ssh_common_args=\"-o StrictHostKeyChecking=no\"' >> /home/ubuntu/inventory.ini",
       "cat /home/ubuntu/inventory.ini",
       "ls -l /home/ubuntu/",
       "cat /home/ubuntu/siva",
