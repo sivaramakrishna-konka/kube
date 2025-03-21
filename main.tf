@@ -76,7 +76,7 @@ variable "instance_types" {
   default = {
     "master"  = "t3a.medium"
     "worker1" = "t3a.medium"
-    "worker2" = "t3a.mediun"
+    "worker2" = "t3a.medium"
   }
 }
 
