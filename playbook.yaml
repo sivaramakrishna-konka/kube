@@ -219,27 +219,6 @@
         line: "alias k='kubectl'"
         create: yes
         state: present
-        
-    - name: Apply Metrics Server YAML
-      command: kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability-1.21+.yaml
-
-    - name: Wait for Metrics Server Deployment
-      command: kubectl rollout status deployment metrics-server -n kube-system
-      register: rollout_status
-      until: rollout_status.rc == 0
-      retries: 10
-      delay: 10
-
-    - name: Patch Metrics Server Deployment to Disable TLS Verification
-      command: >
-        kubectl patch deployment metrics-server -n kube-system --type=json
-        -p '[{\"op\": \"add\", \"path\": \"/spec/template/spec/containers/0/args/-\", \"value\": \"--kubelet-insecure-tls\"}]'
-
-    - name: Restart Metrics Server Deployment
-      command: kubectl rollout restart deployment metrics-server -n kube-system
-
-    - name: Verify Metrics Server is Running
-      command: kubectl get pods -n kube-system | grep metrics-server
       
 - name: Join Worker Nodes
   hosts: workers
