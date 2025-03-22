@@ -240,3 +240,4 @@
       args:
         creates: /etc/kubernetes/kubelet.conf
 # Hello
+#  - --kubelet-insecure-tls
