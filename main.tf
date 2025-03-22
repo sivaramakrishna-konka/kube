@@ -54,7 +54,7 @@ resource "aws_instance" "k8s_nodes" {
 
 # sg
 resource "aws_security_group" "k8s_sg" {
-  name        = "k8s_sg"
+  name        = "kubeadm-sg"
   description = "Allow Kubernetes Traffic"
 
   ingress {
