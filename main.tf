@@ -48,7 +48,7 @@ resource "aws_instance" "k8s_nodes" {
     volume_type = "gp3"
   }
   tags = {
-    Name = each.key
+    Name = "${each.key}-konkas.tech"
   }
 }
 
